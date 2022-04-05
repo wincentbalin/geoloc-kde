@@ -3,3 +3,6 @@ worldtweets.tar.gz
 
 # Ignore Win32 binary (compiled using MinGW distro from nuwen.net)
 geoloc.exe
+
+# Ignore PyCharm settings
+.idea/
