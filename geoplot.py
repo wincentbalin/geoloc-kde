@@ -27,7 +27,6 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import sys
 import os
-import tempfile
 
 
 def make_colormap(seq):
