@@ -7,3 +7,6 @@ geoloc.exe
 
 # Ignore PyCharm settings
 .idea/
+
+# Ignore virtual environment
+venv/
