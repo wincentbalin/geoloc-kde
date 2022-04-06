@@ -10,3 +10,6 @@ geoloc.exe
 
 # Ignore virtual environment
 venv/
+
+# Ignore Python packages
+packages/
