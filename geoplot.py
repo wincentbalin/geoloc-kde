@@ -137,7 +137,7 @@ elif pdf:
     if sys.platform.startswith('darwin'):
         os.system("open "+tmpfn)
     elif sys.platform.startswith('linux'):
-        os.system("xdg-open "+tempfn)
+        os.system("xdg-open "+tmpfn)
     elif sys.platform.startswith('win32'):
         os.startfile(tmpfn)
 
