@@ -29,6 +29,7 @@ import sys
 import os
 import tempfile
 
+
 def make_colormap(seq):
     """Return a LinearSegmentedColormap
     seq: a sequence of floats and RGB-tuples. The floats should be increasing
@@ -46,13 +47,14 @@ def make_colormap(seq):
     return mcolors.LinearSegmentedColormap('CustomMap', cdict)
 
 
-pdf = False;
+pdf = False
 proj = 'cyl'
-maptype = 'world';
-grid = 0;
-contour = 0;
+maptype = 'world'
+grid = 0
+contour = 0
 
-options, remainder = getopt.gnu_getopt(sys.argv[1:], 'uewp:g:cfgn', ['us','europe','world','proj=','grid=','contour','pdf','png'])
+options, remainder = getopt.gnu_getopt(sys.argv[1:], 'uewp:g:cfgn',
+                                       ['us', 'europe', 'world', 'proj=', 'grid=', 'contour', 'pdf', 'png'])
 
 for opt, arg in options:
     if opt in ('-u', '--us'):
@@ -73,23 +75,25 @@ for opt, arg in options:
         png = True
 
 if maptype == 'world':
-    (llcrnrlon, llcrnrlat, urcrnrlon, urcrnrlat) = (-180,-70,180,70)
+    llcrnrlon, llcrnrlat, urcrnrlon, urcrnrlat = -180, -70, 180, 70
 
 if maptype == 'europe':
-    (llcrnrlon, llcrnrlat, urcrnrlon, urcrnrlat) = (-30,30,40,70)
+    llcrnrlon, llcrnrlat, urcrnrlon, urcrnrlat = -30, 30, 40, 70
 
 if maptype == 'us':
-    (llcrnrlon, llcrnrlat, urcrnrlon, urcrnrlat) = (-130,20,-55,50)
+    llcrnrlon, llcrnrlat, urcrnrlon, urcrnrlat = -130, 20, -55, 50
 
 c = mcolors.ColorConverter().to_rgb
-rvb = make_colormap([c('white'), c('white'), 0.1, c('white'), c('yellow'), 0.33, c('yellow'), c('LightGreen'), 0.66, c('LightGreen'), c('orange'), 0.8, c('orange'), c('red'), 0.95, c('red')])
+rvb = make_colormap([c('white'), c('white'), 0.1, c('white'), c('yellow'), 0.33, c('yellow'), c('LightGreen'), 0.66,
+                     c('LightGreen'), c('orange'), 0.8, c('orange'), c('red'), 0.95, c('red')])
 
 data = np.loadtxt(sys.stdin, delimiter="\t")
 longranularity = data.shape[1]
 latgranularity = longranularity/2
 lcenterskip = (180/longranularity)
 
-m = Basemap(projection=proj,lon_0=0, llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, urcrnrlon=urcrnrlon, urcrnrlat=urcrnrlat, resolution='l')
+m = Basemap(projection=proj, lon_0=0,
+            llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, urcrnrlon=urcrnrlon, urcrnrlat=urcrnrlat, resolution='l')
 
 #m.bluemarble()
 m.drawcoastlines()
