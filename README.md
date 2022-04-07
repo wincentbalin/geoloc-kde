@@ -1,6 +1,6 @@
 # Text-based geolocation software
 
-This is the code from the paper ["Kernel density estimation for text-based geolocation"](http://verbs.colorado.edu/~mahu0110/pubs/Kernel%20Denstity%20Estimation%20for%20Text-Based%20Geolocation%20(Hulden%20et%20al.,%202015).pdf). The original repository resided at [Google Code](https://code.google.com/archive/p/geoloc-kde/) and is currently archived.
+This is the code from the paper ["Kernel density estimation for text-based geolocation"](http://verbs.colorado.edu/~mahu0110/pubs/Kernel%20Denstity%20Estimation%20for%20Text-Based%20Geolocation%20(Hulden%20et%20al.,%202015).pdf) by Mans Hulden, Miikka Silfverberg, and Jerid Francom. The original repository resided at [Google Code](https://code.google.com/archive/p/geoloc-kde/) and is currently archived.
 
 # Text-based geolocation
 
