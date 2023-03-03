@@ -48,13 +48,15 @@ latitude,longitude,feature_1,feature_2,...,feature_n
 Here is an example training data file with two documents:
 
 ```
-42.350771,-83.248981,my,features,are,words,in,this,case 33.624409,-112.239866,but,they,could,be,anything,as,long,as,they,are,comma-separated,strings
+42.350771,-83.248981,my,features,are,words,in,this,case
+33.624409,-112.239866,but,they,could,be,anything,as,long,as,they,are,comma-separated,strings
 ```
 
 For this example, we've presumably extracted word features and lowercased them all, but you can you any features at all as long as the feature is representable as a text string. For example, if you wanted to include document publication time as a feature, you could expand the above training data like so:
 
 ```
-42.350771,-83.248981,PUBTIME_1200,my,features,are,words,in,this,case 33.624409,-112.239866,PUBTIME_1700,but,they,could,be,anything,as,long,as,they,are,comma-separated,strings
+42.350771,-83.248981,PUBTIME_1200,my,features,are,words,in,this,case
+33.624409,-112.239866,PUBTIME_1700,but,they,could,be,anything,as,long,as,they,are,comma-separated,strings
 ```
 
 As another example, we might want to only use letter trigrams as our features, which could be accomplished by perhaps representing the documents like this:
