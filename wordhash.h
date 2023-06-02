@@ -38,6 +38,9 @@ void wordhash_free(struct wordhash *wh);              /* Release memory         
 void wordhash_set_value(struct wordhash *wh, char *word, int value);
 void wordhash_inc_value(struct wordhash *wh, char *word);
 
+#include <string.h>
+#include <stdlib.h>
+
 unsigned int wordhash_hashf(char *word) { /* djb2 */
     unsigned int hash = 5381;
     int c;
@@ -88,7 +91,7 @@ void wordhash_rehash(struct wordhash *wh) {
     newtablesize = wh->tablesize * 2;
     oldtablesize = wh->tablesize;
     oldtable = wh->table;
-    wh->table = malloc(sizeof(struct wordhash_table) * newtablesize);
+    wh->table = (struct wordhash_table *) malloc(sizeof(struct wordhash_table) * newtablesize);
     wh->tablesize = newtablesize;
     for (i = 0; i < newtablesize; i++) {
 	(wh->table+i)->value = -1;
@@ -162,10 +165,10 @@ int wordhash_insert(struct wordhash *wh, char *word) {
 struct wordhash *wordhash_init(int tablesize) {
     struct wordhash *wh;
     int i;
-    wh = malloc(sizeof(struct wordhash));
+    wh = (struct wordhash *) malloc(sizeof(struct wordhash));
     wh->tablesize = tablesize;
     wh->occupancy = 0;
-    wh->table = malloc(sizeof(struct wordhash_table) * wh->tablesize);
+    wh->table = (struct wordhash_table *) malloc(sizeof(struct wordhash_table) * wh->tablesize);
     for (i = 0; i < wh->tablesize; i++) {
 	(wh->table+i)->value = -1;
     }
