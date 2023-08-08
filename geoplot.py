@@ -20,14 +20,51 @@
 # MH20140406                                                                        #
 #####################################################################################
 
-import getopt
-from mpl_toolkits.basemap import Basemap
+import argparse
+import cartopy.crs as ccrs
+import cartopy.feature as cf
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import sys
 import os
 
+
+PROJECTIONS = {
+    'plate_carree': ccrs.PlateCarree,
+    'albers_equal_area': ccrs.AlbersEqualArea,
+    'azimuthal_equidistant': ccrs.AzimuthalEquidistant,
+    'equidistant_conic': ccrs.EquidistantConic,
+    'lambert_conformal': ccrs.LambertConformal,
+    'lambert_cylindrical': ccrs.LambertCylindrical,
+    'mercator': ccrs.Mercator,
+    'miller': ccrs.Miller,
+    'mollweide': ccrs.Mollweide,
+    'orthographic': ccrs.Orthographic,
+    'robinson': ccrs.Robinson,
+    'sinusoidal': ccrs.Sinusoidal,
+    'stereographic': ccrs.Stereographic,
+    'transverse_mercator': ccrs.TransverseMercator,
+    'utm': ccrs.UTM,
+    'interrupted_goode_homolosine': ccrs.InterruptedGoodeHomolosine,
+    'rotated_pole': ccrs.RotatedPole,
+    'osgb': ccrs.OSGB,
+    'euro_pp': ccrs.EuroPP,
+    'geostationary': ccrs.Geostationary,
+    'nearside_perspective': ccrs.NearsidePerspective,
+    'eckert_i': ccrs.EckertI,
+    'eckert_ii': ccrs.EckertII,
+    'eckert_iii': ccrs.EckertIII,
+    'eckert_iv': ccrs.EckertIV,
+    'eckert_v': ccrs.EckertV,
+    'eckert_vi': ccrs.EckertVI,
+    'equal_earth': ccrs.EqualEarth,
+    'gnomonic': ccrs.Gnomonic,
+    'lambert_azimuthal_equal_area': ccrs.LambertAzimuthalEqualArea,
+    'north_polar_stereo': ccrs.NorthPolarStereo,
+    'osni': ccrs.OSNI,
+    'south_polar_stereo': ccrs.SouthPolarStereo
+}
 
 def make_colormap(seq):
     """Return a LinearSegmentedColormap
@@ -45,104 +82,79 @@ def make_colormap(seq):
             cdict['blue'].append([item, b1, b2])
     return mcolors.LinearSegmentedColormap('CustomMap', cdict)
 
+def make_rvb_colormap():
+    c = mcolors.ColorConverter().to_rgb
+    return make_colormap([c('white'), c('white'), 0.1, c('white'), c('yellow'), 0.33, c('yellow'), c('LightGreen'), 0.66,
+                          c('LightGreen'), c('orange'), 0.8, c('orange'), c('red'), 0.95, c('red')])
 
-pdf = False
-proj = 'cyl'
-maptype = 'world'
-grid = 0
-contour = 0
+def open_file(path: str):
+    if sys.platform.startswith('darwin'):
+        os.system('open {path}'.format(path=path))
+    elif sys.platform.startswith('linux'):
+        os.system('xdg-open {path}'.format(path=path))
+    elif sys.platform.startswith('win32'):
+        os.startfile(path)
 
-options, remainder = getopt.gnu_getopt(sys.argv[1:], 'uewp:g:cfgn',
-                                       ['us', 'europe', 'world', 'proj=', 'grid=', 'contour', 'pdf', 'png'])
+parser = argparse.ArgumentParser(description='Simple map plotting of --print-matrix output from geoloc')
+parser.add_argument('-u', '--us', action='store_true', help='Plot US map')
+parser.add_argument('-e', '--europe', action='store_true', help='Plot Europe map')
+parser.add_argument('-w', '--world', action='store_true', help='Plot world map')
+parser.add_argument('-p', '--proj', choices=PROJECTIONS.keys(), default='plate_carree', help='Projection name')
+parser.add_argument('-g', '--grid', action='store_true', help='Show grid')
+parser.add_argument('-s', '--states', action='store_true', help='Plot state boundaries')
+parser.add_argument('-c', '--contour', action='store_true', help='Plot contours instead of grid')
+parser.add_argument('-o', '--output', help='Output file; extension specifies format')
+parser.add_argument('-a', '--open_after', action='store_true', help='Open created file')
+args = parser.parse_args()
 
-for opt, arg in options:
-    if opt in ('-u', '--us'):
-        maptype = 'us'
-    elif opt in ('-w', '--world'):
-        maptype = 'world'
-    elif opt in ('-e', '--europe'):
-        maptype = 'europe'
-    elif opt in ('p', '--proj'):
-        proj = arg
-    elif opt in ('g', '--grid'):
-        grid = int(arg)
-    elif opt in ('c', '--contour'):
-        contour = 1
-    elif opt in ('f', '--pdf'):
-        pdf = True
-    elif opt in ('n', '--png'):
-        png = True
+if args.us:
+    extent = [-130, -55, 25, 50]
+elif args.world:
+    extent = [-180, 180, -70, 70]
+elif args.europe:
+    extent = [-25, 30, 35, 70]
+else:
+    parser.exit(message='Please specify the map type (us or world or europe)')
 
-if maptype == 'world':
-    llcrnrlon, llcrnrlat, urcrnrlon, urcrnrlat = -180, -70, 180, 70
-
-if maptype == 'europe':
-    llcrnrlon, llcrnrlat, urcrnrlon, urcrnrlat = -30, 30, 40, 70
-
-if maptype == 'us':
-    llcrnrlon, llcrnrlat, urcrnrlon, urcrnrlat = -130, 20, -55, 50
-
-c = mcolors.ColorConverter().to_rgb
-rvb = make_colormap([c('white'), c('white'), 0.1, c('white'), c('yellow'), 0.33, c('yellow'), c('LightGreen'), 0.66,
-                     c('LightGreen'), c('orange'), 0.8, c('orange'), c('red'), 0.95, c('red')])
-
-data = np.loadtxt(sys.stdin, delimiter="\t")
+rvb = make_rvb_colormap()
+data = np.loadtxt(sys.stdin, delimiter='\t')
 longranularity = data.shape[1]
-latgranularity = longranularity/2
+latgranularity = int(longranularity/2)
 lcenterskip = (180/longranularity)
 
-m = Basemap(projection=proj, lon_0=0,
-            llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, urcrnrlon=urcrnrlon, urcrnrlat=urcrnrlat, resolution='l')
+ax = plt.axes(projection=PROJECTIONS[args.proj]())
+ax.set_extent(extent, crs=PROJECTIONS[args.proj]())
+ax.add_feature(cf.COASTLINE)
+ax.add_feature(cf.BORDERS)
 
-#m.bluemarble()
-m.drawcoastlines()
-m.drawcountries()
-m.drawstates()
+if args.states:
+    ax.add_feature(cf.STATES, edgecolor='lightgrey')
 
-if grid > 0:
-    parallels = np.arange(-90, 90, grid)
-    meridians = np.arange(-180, 180, grid)
-    m.drawparallels(parallels)
-    m.drawmeridians(meridians)
+if args.grid:
+    ax.gridlines(xlocs=np.arange(-180, 180, 360 / latgranularity),
+             ylocs=np.arange(-90, 90, 180 / latgranularity),
+             draw_labels=True, dms=True, color='gray')
 
-if contour:
+if args.contour:
     x = np.linspace(-180 + lcenterskip, 180 - lcenterskip, longranularity)
     y = np.linspace(-90 + lcenterskip, 90 - lcenterskip, latgranularity)
     x, y = np.meshgrid(x, y)
-    converted_x, converted_y = m(x, y)
-    p = m.contourf(converted_x, converted_y, data, cmap=rvb, zorder=1, alpha=0.8)
-    #p = m.contour(converted_x, converted_y, data, cmap=rvb, zorder=1, alpha=0.8)
+    p = ax.contourf(x, y, data, cmap=rvb, zorder=1, alpha=0.8)
 else:
     x = np.linspace(-180 , 180, longranularity, endpoint=False)
     y = np.linspace(-90 , 90, latgranularity, endpoint=False)
     x, y = np.meshgrid(x, y)
-    converted_x, converted_y = m(x, y)
-    p = m.pcolormesh(converted_x, converted_y, data, cmap=rvb, zorder=1, alpha=0.8)
+    p = ax.pcolormesh(x, y, data, transform=PROJECTIONS[args.proj](), cmap=rvb, zorder=1, alpha=0.8)
 
-m.colorbar(p)
+plt.colorbar(p, orientation='horizontal')
 
-if png:
-#    tmpfn = os.tempnam('/tmp/','locpng')
-    tmpfn = '/tmp/locpng.png'
-    plt.savefig(tmpfn, format='png')
-
-#    if sys.platform.startswith('darwin'):
-#        os.system("open "+tmpfn)
-#    elif sys.platform.startswith('linux'):
-#        os.system("xdg-open "+tempfn)
-#    elif sys.platform.startswith('win32'):
-#        os.startfile(tmpfn)
-
-elif pdf:
-    tmpfn = os.tempnam('/tmp/','locpdf')
-    plt.savefig(tmpfn, format='pdf')
-
-    if sys.platform.startswith('darwin'):
-        os.system("open "+tmpfn)
-    elif sys.platform.startswith('linux'):
-        os.system("xdg-open "+tmpfn)
-    elif sys.platform.startswith('win32'):
-        os.startfile(tmpfn)
-
-else:
+if args.output is None:
     plt.show()
+elif args.output.lower().endswith('.png'):
+    plt.savefig(args.output, format='png')
+    if args.open_after:
+        open_file(args.output)
+elif args.output.lower().endswith('.pdf'):
+    plt.savefig(args.output, format='pdf')
+    if args.open_after:
+        open_file(args.output)
