@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 
-#####################################################################################
-# Simple map plotting of --print-matrix output from geoloc                          #
-#                                                                                   #
-# Usage: reads geoloc matrix from stdin and produces a plot on map                  #
-#                                                                                   #
-# Plot matrix on Europe map:                                                        #
-# geoloc --classify --print-matrix mymsg.txt | ./geoplot.py --europe                #
-#                                                                                   #
-# Plot on world map, projection is mercator:                                        #
-# geoloc --classify --print-matrix mymsg.txt | ./geoplot.py --world --proj=merc     #
-#                                                                                   #
-# Plot on U.S. map, use contours instead of grid:                                   #
-# geoloc --classify --print-matrix mymsg.txt | ./geoplot.py --us --contour          #
-#                                                                                   #
-# As previous, but output PDF:                                                      #
-# geoloc --classify --print-matrix mymsg.txt | ./geoplot.py --us --contour --pdf    #
-#                                                                                   #
-# MH20140406                                                                        #
-#####################################################################################
+#############################################################################################
+# Simple map plotting of --print-matrix output from geoloc                                  #
+#                                                                                           #
+# Usage: reads geoloc matrix from stdin and produces a plot on map                          #
+#                                                                                           #
+# Plot matrix on Europe map:                                                                #
+# geoloc --classify --print-matrix mymsg.txt | ./geoplot.py --europe                        #
+#                                                                                           #
+# Plot on world map, projection is mercator:                                                #
+# geoloc --classify --print-matrix mymsg.txt | ./geoplot.py --world --proj mercator         #
+#                                                                                           #
+# Plot on U.S. map, use contours instead of grid:                                           #
+# geoloc --classify --print-matrix mymsg.txt | ./geoplot.py --us --contour                  #
+#                                                                                           #
+# As previous, but output PDF:                                                              #
+# geoloc --classify --print-matrix mymsg.txt | ./geoplot.py --us --contour --output map.pdf #
+#                                                                                           #
+# MH20140406 WB20230808                                                                     #
+#############################################################################################
 
 import argparse
 import cartopy.crs as ccrs
