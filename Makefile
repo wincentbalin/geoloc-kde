@@ -1,7 +1,7 @@
 PREFIX = /usr/local
 BINPREFIX = $(PREFIX)/bin/
 CC=cc
-CFLAGS=-O3 -std=c99 -Wall
+CFLAGS=-O3 -std=c99 -Wall -D_BSD_SOURCE
 LFLAGS=-lz -lm
 
 geoloc: geoloc.c wordhash.h
