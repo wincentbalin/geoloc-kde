@@ -1,0 +1,26 @@
+/* This CSS file create a viewport-wide map with inputs above */
+
+body {
+    margin: 0
+}
+
+#map {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0
+}
+
+#inputs {
+    position: fixed;
+    z-index: 500;
+    top: 1em;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.5em;
+    background: lightgray
+}
+
+#inputs * {
+    display: inline-block
+}
